@@ -6,37 +6,6 @@ var config = require('./config/index');
 //var config = require('./config/config');
 var DEFAULT_FILE= 'index.html';
 
-//拡張子を抽出
-function getExtension(fileName) {
-	var fileNameLength = fileName.length;
-	var dotPoint = fileName.indexOf('.', fileNameLength - 5 );
-	var extn = fileName.substring(dotPoint + 1, fileNameLength);
-	return extn;
-}
-
-//content-type を指定
-function getContentType(fileName) {
-	var extentsion = getExtension(fileName).toLowerCase();
-	var contentType = {
-		'html': 'text/html',
-		'htm' : 'text/htm',
-		'css' : 'text/css',
-		'js' : 'text/javaScript; charset=utf-8',
-		'json' : 'application/json; charset=utf-8',
-		'xml' : 'application/xml; charset=utf-8',
-		'jpeg' : 'image/jpeg',
-		'jpg' : 'image/jpg',
-		'gif' : 'image/gif',
-		'png' : 'image/png',
-		'mp3' : 'audio/mp3',
-	};
-	var contentType_value = contentType[extentsion];
-	if(contentType_value === undefined){
-			contentType_value = 'text/plain';
-	}
-	return contentType_value;
-}
-
 function http_post(path,query,data,res){
 	switch(path[0]) {
 	case 'config':
@@ -49,19 +18,6 @@ function http_get(path,query,res){
 	case 'config':
 		config.http_get(path,query,res);
 		break;
-	default:
-		var requestedFile = path.join('/');
-		fs.readFile(requestedFile,'binary', function (err, data) {
-				if(err){
-					res.writeHead(404, {'Content-Type': 'text/plain'});
-					res.write('not found\n');
-					res.end();
-				}else{
-					res.writeHead(200, {'Content-Type': getContentType(requestedFile),'Connection': 'close'});
-					res.write(data, "binary");
-					res.end();
-				}
-		});
 	}
 }
 
@@ -102,5 +58,5 @@ server.on('connection', function (socket) {
 		socket.setTimeout(1000);
 });
 
-server.listen(80);
+server.listen(8888);
 

@@ -46,36 +46,6 @@ var header = {
 	'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
 };
 
-//拡張子を抽出
-function getExtension(fileName) {
-	var fileNameLength = fileName.length;
-	var dotPoint = fileName.indexOf('.', fileNameLength - 5 );
-	var extn = fileName.substring(dotPoint + 1, fileNameLength);
-	return extn;
-}
-
-//content-type を指定
-function getContentType(fileName) {
-	var extentsion = getExtension(fileName).toLowerCase();
-	var contentType = {
-		'html': 'text/html',
-		'htm' : 'text/htm',
-		'css' : 'text/css',
-		'js' : 'text/javaScript; charset=utf-8',
-		'json' : 'application/json; charset=utf-8',
-		'xml' : 'application/xml; charset=utf-8',
-		'jpeg' : 'image/jpeg',
-		'jpg' : 'image/jpg',
-		'gif' : 'image/gif',
-		'png' : 'image/png',
-		'mp3' : 'audio/mp3',
-	};
-	var contentType_value = contentType[extentsion];
-	if(contentType_value === undefined){
-		contentType_value = 'text/plain';
-	}
-	return contentType_value;
-}
 function http_post(path,query,data,res){
 	//Web サーバーのロジック
 	if(path.length!=2){
@@ -136,20 +106,6 @@ function http_post(path,query,data,res){
 			}
 		});
 		break;
-	case 'get':
-		var dbpath = './db/'+query.user+".sqlite3";
-		var db = new sqlite3.Database(dbpath);
-		sq.get(db,query.table,function(err,sq_res){
-			if(err) {
-				res.writeHead(404, header);
-				res.write(JSON.stringify(err));
-				res.end();
-			} else {
-				res.writeHead(200, header);
-				res.end(JSON.stringify(sq_res));
-			}
-		});
-		break;
 	case 'create':
 		var db = new sqlite3.Database(dbpath);
 		var table = data.table;
@@ -205,31 +161,16 @@ function http_post(path,query,data,res){
 			}
 		]);
 		break;
-	case 'download':
-		var dbpath = './db/'+query.user+".sqlite3";
-		var db = new sqlite3.Database(dbpath);
-		var name,machine,reason;
-		db.serialize(function () {
-			getTable(db,'name',name)
-			.then(getTable(db,'machine',machine)
-			.then(getTable(db,'reason',reason)
-			.then(function(){
-				console.log({name:name,machine:machine,reason:reason});
-			})));
-		});
-		break;
 	}
 }
 function http_get(path,query,res){
 	//Web サーバーのロジック
-	console.log({path:path,query:query});
 	if(path.length!=2){
 		res.writeHead(404, {'Content-Type': 'text/plain'});
 		res.write('url error\n');
 		res.end();
 		return;
 	}
-	var requestedFile =  path[1] === "" ? DEFAULT_FILE: path.join('/');
 	switch(query.cmd){
 	case 'get':
 		var dbpath = './db/'+query.user+".sqlite3";
@@ -246,6 +187,7 @@ function http_get(path,query,res){
 		});
 		break;
 	case 'jqgrid':
+		console.log('jqgrid');
 		var dbpath = './db/'+query.user+".sqlite3";
 		var db = new sqlite3.Database(dbpath);
 		sq.getJqgridTable(db,query.table,query, function(err,sq_res){
@@ -257,19 +199,6 @@ function http_get(path,query,res){
 				res.writeHead(200, header);
 				res.end(JSON.stringify(sq_res));
 			}
-		});
-		break;
-	default:
-		fs.readFile(requestedFile,'binary', function (err, data) {
-				if(err){
-					res.writeHead(404, {'Content-Type': 'text/plain'});
-					res.write('not found\n');
-					res.end();
-				}else{
-					res.writeHead(200, {'Content-Type': getContentType(requestedFile),'Connection': 'close'});
-					res.write(data, "binary");
-					res.end();
-				}
 		});
 		break;
 	}
