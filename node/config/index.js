@@ -94,7 +94,7 @@ function http_post(path,query,data,res){
 		for(var i=0;i<condition.length;i++){
 			condition[i] = data_type[table].key[0] + '=' + condition[i];
 		}
-		console.log(condition);
+		//console.log(condition);
 		sq.delRow(db,query.table,condition,function(err,sq_res){
 			if(err) {
 				res.writeHead(404, header);
@@ -123,7 +123,7 @@ function http_post(path,query,data,res){
 	case 'drop':
 		var db = new sqlite3.Database(dbpath);
 		var table = data.table;
-		console.log({func:'drop',table:table});
+		//console.log({func:'drop',table:table});
 		sq.drop(db,table,function(err,sq_res){
 			if(err) {
 				res.writeHead(404, header);
@@ -138,14 +138,14 @@ function http_post(path,query,data,res){
 	case 'upload':
 		var db = new sqlite3.Database(dbpath);
 		var table = data.table;
-		console.log({func:'upload',file:data.data,table:data.table,type:data_type[table].type});
+		//console.log({func:'upload',file:data.data,table:data.table,type:data_type[table].type});
 		process.on('unhandledRejection', console.dir);
 		async.series([
 			function (callback){	// delete name table
 				sq.drop(db,table,function(err,res){callback(null,true);})
 			},
 			function (callback) {	// create name table
-				console.log(data_type[table])
+				//console.log(data_type[table])
 				sq.create(db,table,data_type[table].type,function(err,res){callback(null,true);})
 			},
 			function(callback){
@@ -187,7 +187,7 @@ function http_get(path,query,res){
 		});
 		break;
 	case 'jqgrid':
-		console.log('jqgrid');
+		//console.log('jqgrid');
 		var dbpath = './db/'+query.user+".sqlite3";
 		var db = new sqlite3.Database(dbpath);
 		sq.getJqgridTable(db,query.table,query, function(err,sq_res){

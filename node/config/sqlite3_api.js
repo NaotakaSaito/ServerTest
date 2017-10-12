@@ -18,7 +18,7 @@ var async = require('async');
 //
 function getDataArray(mode,key,data) {
 	var result;
-	console.log(data);
+	//console.log(data);
 	switch(mode) {
 	case 'add':
 		var ar = [];
@@ -40,7 +40,7 @@ function getDataArray(mode,key,data) {
 		} else {
 			var row = [];
 			for (var j=0;j< key.length; j++) {
-				console.log('data[key[j]]', j, key[j],data[key[j]],data);
+				//console.log('data[key[j]]', j, key[j],data[key[j]],data);
 				row.push(data[key[j]])
 			}
 			ar.push(row);
@@ -71,14 +71,14 @@ function getDataArray(mode,key,data) {
 			}
 			ar.push(row);
 		}
-		console.log('ar',ar);
+		//console.log('ar',ar);
 		result = {
 			key: key,
 			data: ar
 		}
 		break;
 	}
-	console.log({func: 'getDataArray',result:result});
+	//console.log({func: 'getDataArray',result:result});
 	return result;
 }
 function create(db,table,type,callback){
@@ -87,7 +87,7 @@ function create(db,table,type,callback){
 		msg.push(key + ' ' + type[key]);
 	}
 	var createtable = 'create table '+table+'('+msg.join(',')+')';
-	console.log({func:'createTable',msg: createtable});
+	//console.log({func:'createTable',msg: createtable});
 	db.run(createtable,function(err,res){
 		if((callback != undefined) && (callback != null)) callback(err,res);
 	});
@@ -96,7 +96,7 @@ function create(db,table,type,callback){
 function drop(db,table,callback){
 	var drop = 'drop table '+table;
 	db.run(drop,function(err,res){
-		console.log({func:'drop',err:err,res:res});
+		//console.log({func:'drop',err:err,res:res});
 		if((callback != undefined) && (callback != null))callback(err,res);
 	});
 }
@@ -111,13 +111,13 @@ function drop(db,table,callback){
 function delRow(db,table,conditions,callback){
 	if( conditions instanceof Array){
 		var delt = 'DELETE FROM '+table+' WHERE '+ conditions.join(' OR ');
-		console.log({func:'delRow',msg: delt});
+		//console.log({func:'delRow',msg: delt});
 		db.run(delt,function(err,res){
 			if((callback != undefined) && (callback != null)) callback(err,res);
 		});
 	} else {
 		var str = 'id must be Array';
-		console.error('[delRow] @ sqlite3_api: '+str);
+		//console.error('[delRow] @ sqlite3_api: '+str);
 		if((callback != undefined) && (callback != null)) {
 			callback(str,null);
 		}
@@ -135,7 +135,7 @@ function editRow(db,table,condition,data,callback){
 	}
 	var update = 'UPDATE '+table+' SET ' + value.join(',') +' WHERE '+condition;
 	db.run(update,function(err,res){
-		console.log({func:'editRow',err:err,res:res});
+		//console.log({func:'editRow',err:err,res:res});
 		if((callback != undefined) && (callback != null))callback(err,res);
 	});
 }
@@ -143,7 +143,7 @@ function addRow(db,table,data,callback){
 	var ar = [];
 	var insert;
 	var tmp = data.data;
-	console.log(tmp);
+	//console.log(tmp);
 	var values = [];
 	for(var i=0; i < tmp.length; i++) {
 		for(var j=0;j<tmp[i].length;j++) {
@@ -153,29 +153,29 @@ function addRow(db,table,data,callback){
 		}
 		values.push('('+ tmp[i].join(',')+')');
 	}
-	console.log(values);
+	//console.log(values);
 	if(data.key instanceof Array) {
 		var insert = 'insert or ignore into '+table+'('+ data.key.join(',') +')'+ ' values ' + values.join(',');
 	} else {
 		var insert = 'insert or ignore into '+table+' values ' + values.join(',');
 	}
-	console.log({func: 'addRow',msg: insert});
+	//console.log({func: 'addRow',msg: insert});
 	db.serialize(function () {
 		db.run(insert,function(err,res){
-			console.log({func:'addRow',err:err,res:res});
+			//console.log({func:'addRow',err:err,res:res});
 			if((callback != undefined) && (callback != null)) callback(err,res);
 		});
 	});
 }
 function get(db,table,callback){
 	db.all('select * from '+table, function (err, res) {
-		console.log({func:'get',err:err,res:res});
+		//console.log({func:'get',err:err,res:res});
 		if((callback != undefined) && (callback != null))callback(err,res);
 	});
 }
 function getJqgridTable(db,table,query,callback){
 	db.all('select * from '+table, function (err, res) {
-		console.log({func:'getJqgridTable',err:err,res:res});
+		//console.log({func:'getJqgridTable',err:err,res:res});
 		if(err == null){
 			var lines = res.length;
 			var limit = parseInt(query.rows);
