@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="shortcut icon" href="favicon.ico" type='image/x-icon' />
+	<link rel="icon" href="favicon.ico" type='image/x-icon' />
+	<title>config setting</title>
+
+	<link type="text/css" media="screen" href="../jquery-ui/jquery-ui.min.css" rel="stylesheet" />
+	<link type="text/css" media="screen" href="../jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+	<script type="text/javascript" src="../jquery/jquery-3.2.1.min.js" ></script>
+	<script type="text/javascript" src="../jqGrid/js/jquery.jqGrid.min.js" ></script>
+	<script type="text/javascript" src="../jqGrid/js/i18n/grid.locale-ja.js" ></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="../jquery-ui/jquery-ui-1.10.4.custom.min.css" />
+	<script type="text/javascript" src="../jquery-ui/jquery-ui-1.10.4.custom.min.js"></script>
+
+	<script type="text/javascript">
+	var user = 'myHome';
+	var tableParam = {
+		name:{
+			colNames:['id', 'data'],
+			colModel:[
+				{index:'id', name:'id', align: 'center'},
+				{index: 'data', name:'data', align: 'center',width:400,editoptions:{maxlength:50}, editable:true }],
+		},
+		machine:{
+			colNames:['id','addr','data'],
+			colModel:[
+				{index:'id', name:'id', align: 'center'},
+				{index: 'addr', name:'addr', align: 'center',width:200,editoptions:{maxlength:50}, editable:true },
+				{index: 'data', name:'data', align: 'center',width:200,editoptions:{maxlength:50}, editable:true }],
+		},
+		reason:{
+			colNames:['id', 'data'],
+			colModel:[
+				{index:'id', name:'id', align: 'center'},
+				{index: 'data', name:'data', align: 'center',width:400,editoptions:{maxlength:50}, editable:true }],
+		},
+		test:{
+			colNames:['id', 'data','d1','d2'],
+			colModel:[
+				{index:'id', name:'id', align: 'center'},
+				{index: 'data', name:'data', align: 'center',width:400,editoptions:{maxlength:50}, editable:true },
+				{index: 'd1', name:'d1', align: 'center',width:100,editoptions:{maxlength:50}, editable:true },
+				{index: 'd2', name:'d2', align: 'center',width:100,editoptions:{maxlength:50}, editable:true }],
+		},
+
+	}
+	function genJqgridParam(table,caption){
+		var newTable = {
+			url: location.href+'&table='+table+'&cmd=jqgrid',
+			datatype: "json",
+			width: 'auto',
+			height: 'auto',
+			multiselect: true,
+			cellEdit: false,
+			cellsubmit: 'clientArray',
+			rowNum:10,
+			caption: caption,
+			rowList : [1, 10, 20],         //変更可能な1ページ当たりの行数
+			pager : table+'pager',              //footerのページャー要素のid
+			viewrecords: true,              //footerの右下に表示する。
+			loadError: function (jqXHR, textStatus, errorThrown) {
+				alert('HTTP message body (jqXHR.responseText): ' + '\n' + jqXHR.responseText);
+			}
+		};
+		for(key in tableParam[table]){
+			newTable[key] = tableParam[table][key];
+		}
+		return newTable;
+	}
+	var tableName = {
+		name: '#namelist',
+		machine: '#machinelist',
+		reason: '#reasonlist',
+		test: '#testlist',
+	};
+
+	function addRow(table){
+		jQuery(tableName[table]).jqGrid('editGridRow',"new",{
+			url: location.href+'&table='+table,
+			height:'auto',
+			modal:true,                                // モーダル表示にします。
+			addCaption:"追加",                         // フォームのキャプションを設定
+			bSubmit:"保存",                            // フォーム内に表示する確定ボタンのキャプション
+			bCancel:"キャンセル",                      // フォーム内に表示する取消ボタンのキャプション
+			reloadAfterSubmit:true                    // cellsubmit: 'clientArray'なのでサブミット後データを再読み込みしない
+		});
+		return false;
+	}
+	function editRow(table){
+		var rowid = jQuery(tableName[table]).jqGrid('getGridParam','selrow');
+		if (rowid != null) {
+			jQuery(tableName[table]).jqGrid('editGridRow',rowid,{
+				url: location.href+'&table='+table,
+				multiselect: true,
+				height:'auto',
+				modal:true,                             // モーダル表示にします。
+				editCaption:"編集",                     // フォームのキャプションを設定
+				bSubmit:"更新",                         // フォーム内に表示する確定ボタンのキャプション
+				bCancel:"キャンセル",                   // フォーム内に表示する取消ボタンのキャプション
+				reloadAfterSubmit:true,                // cellsubmit: 'clientArray'なのでサブミット後データを再読み込みしない
+			});
+		} else {
+			alert("編集するデータを選択してください。");
+		}
+		return false;
+	}
+	function delRow(table){
+		var rowid = jQuery(tableName[table]).getGridParam('selarrrow');
+		if (rowid.length != 0) {
+			jQuery(tableName[table]).jqGrid('delGridRow',rowid,{
+				url: location.href+'&table='+table,
+				multiselect: true,
+				modal:true,                             // モーダル表示にします。
+				caption:"削除",                         // フォームのキャプションを設定
+				msg:"選択したデータを削除しますか？",   // フォーム内に表示するメッセージ
+				bSubmit:"はい",                         // フォーム内に表示する確定ボタンのキャプション
+				bCancel:"いいえ",                       // フォーム内に表示する取消ボタンのキャプション
+				reloadAfterSubmit:true                // cellsubmit: 'clientArray'なのでサブミット後データを再読み込みしない
+			});
+		} else {
+			alert("削除するデータを選択してください。");
+		}
+		return false;
+	}
+	function drop(table){
+		$.ajax({
+			url: location.href+'&table='+table,
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				user: user,
+				table: table,
+				oper: 'drop'
+			},
+			timeout: 5000,
+			success: function(data){
+			},
+			error: function(err){
+				alert(JSON.stringify(err));
+			}
+		});
+	}
+	function create(table){
+		$.ajax({
+			url: location.href+'&table='+table,
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				user: user,
+				table: table,
+				oper: 'create'
+			},
+			timeout: 5000,
+			success: function(data){
+				$(tableName[table]).jqGrid("setGridParam",{datatype:"json"}).trigger("reloadGrid");
+			},
+			error: function(err){
+				alert(JSON.stringify(err));
+			}
+		});
+	}
+	function upload(files,table) {
+		var reader = new FileReader();
+		reader.onloadend = function(){
+			$.ajax({
+				url: location.href,
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					user: user,
+					table: table,
+					oper: 'upload',
+					data: reader.result
+				},
+				success: function(data){
+					alert('upload success');
+					$(tableName[table]).jqGrid("setGridParam",{datatype:"json"}).trigger("reloadGrid");
+				},
+				error: function(err){
+					alert(JSON.stringify(err));
+					$(tableName[table]).jqGrid("setGridParam",{datatype:"json"}).trigger("reloadGrid");
+				},
+			});
+		}
+		if(files[0].size > 32767){
+			alert('max file size is 32KB')
+		} else {
+			reader.readAsText(files[0],'utf-8');
+		};
+	};
+	function uploadButton(file_id){
+		$(file_id).click();
+		return false;
+	}
+
+	function saveFile(blob, filename) {
+		var objectURL = (window.URL || window.webkitURL).createObjectURL(blob), a = document.createElement('a');
+		e = document.createEvent('MouseEvent');
+		//a要素のdownload属性にファイル名を設定
+		a.download = filename;
+		a.href = objectURL;
+		//clickイベントを着火
+		e.initEvent("click", true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+		a.dispatchEvent(e);
+	}
+
+	function download(table){
+		$.ajax({
+			url: location.href+'&table='+table,
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				user: user,
+				table: table,
+				oper: 'get'
+			},
+			timeout: 5000,
+			success: function(data){
+				var csv = [];
+				for(var i = 0; i < data.length; i++) {
+					var tmp = [];
+					for(key in data[i]){
+						if(key != 'id') tmp.push(data[i][key]);
+					}
+					tmp.push('\n');
+					csv.push(tmp);
+				}
+				saveFile(new Blob(csv), table+'.csv');
+			},
+			error: function(err){
+				alert(JSON.stringify(err));
+			}
+		});
+	}
+	function get(table){
+		$.ajax({
+			url: location.href+'&table='+table,
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				user: user,
+				table: table,
+				oper: 'get'
+			},
+			timeout: 5000,
+			success: function(data){
+				console.log(data);
+			},
+			error: function(err){
+				alert(JSON.stringify(err));
+			}
+		});
+	}
+	jQuery(document).ready(function(){
+		$("input:submit, a, button,select", ".toolbar").button();	// jQuery UI Widget Button.
+		$("#tabs" ).tabs();
+		jQuery(tableName['name']).jqGrid(genJqgridParam('name','担当者'));
+		jQuery(tableName['machine']).jqGrid(genJqgridParam('machine','装置名'));
+		jQuery(tableName['reason']).jqGrid(genJqgridParam('reason','理由'));
+		jQuery(tableName['test']).jqGrid(genJqgridParam('test','test'));
+	});
+	</script>
+</head>
+<body>
+<style>
+#file {
+	display: none;
+}
+.toolbar {
+	margin: 5px 0;
+	font-size: 0.8em;
+}
+.table {
+	margin: 5px 0;
+	font-size: 1.0em;
+}
+.header {
+	margin: 5px 0;
+	font-size: 0.8em;
+}
+</style>
+<div id="tabs" class="toolbar">
+	<ul>
+		<li><a href="#tabs-1">担当者</a></li>
+		<li><a href="#tabs-2">装置名</a></li>
+		<li><a href="#tabs-3">理由</a></li>
+		<li><a href="#tabs-4">TEST</a></li>
+	</ul>
+	<div id="tabs-1">
+		<br>
+		<table id="namelist" class="table"></table>
+		<div id="namepager"></div>
+		<br>
+		<div>
+			<button type="button" onclick="create('name')">新規作成</button>
+			<button type="button" onclick="drop('name')">テーブル削除</button>
+			<button type="button" onclick="addRow('name')">追加</button>
+			<button type="button" onclick="editRow('name')">編集</button>
+			<button type="button" onclick="delRow('name')">削除</button>
+			<button type="button" onclick="uploadButton('#upload_name')">CSV読み込み</button>
+			<button type="button" onclick="download('name')">CSVダウンロード</button>
+			<button type="button" onclick="get('name')">表を取得</button>
+		</div>
+	</div>
+	<div id="tabs-2">
+		<br>
+		<table id="machinelist" class="table"></table>
+		<div id="machinepager"></div>
+		<br>
+		<div>
+			<button type="button" onclick="create('machine')">新規作成</button>
+			<button type="button" onclick="drop('machine')">テーブル削除</button>
+			<button type="button" onclick="addRow('machine')">追加</button>
+			<button type="button" onclick="editRow('machine')">編集</button>
+			<button type="button" onclick="delRow('machine')">削除</button>
+			<button type="button" onclick="uploadButton('#upload_machine')">CSV読み込み</button>
+			<button type="button" onclick="download('machine')">CSVダウンロード</button>
+			<button type="button" onclick="get('machine')">表を取得</button>
+		</div>
+	</div>
+	<div id="tabs-3">
+		<br>
+		<table id="reasonlist" class="table"></table>
+		<div id="reasonpager"></div>
+		<br>
+		<div>
+			<button type="button" onclick="create('reason')">新規作成</button>
+			<button type="button" onclick="drop('reason')">テーブル削除</button>
+			<button type="button" onclick="addRow('reason')">追加</button>
+			<button type="button" onclick="editRow('reason')">編集</button>
+			<button type="button" onclick="delRow('reason')">削除</button>
+			<button type="button" onclick="uploadButton('#upload_reason')">CSV読み込み</button>
+			<button type="button" onclick="download('reason')">CSVダウンロード</button>
+			<button type="button" onclick="get('reason')">表を取得</button>
+		</div>
+	</div>
+	<div id="tabs-4">
+		<br>
+		<table id="testlist" class="table"></table>
+		<div id="testpager"></div>
+		<br>
+		<div>
+			<button type="button" onclick="create('test')">新規作成</button>
+			<button type="button" onclick="drop('test')">テーブル削除</button>
+			<button type="button" onclick="addRow('test')">追加</button>
+			<button type="button" onclick="editRow('test')">編集</button>
+			<button type="button" onclick="delRow('test')">削除</button>
+			<button type="button" onclick="uploadButton('#upload_test')">CSV読み込み</button>
+			<button type="button" onclick="download('test')">CSVダウンロード</button>
+			<button type="button" onclick="get('test')">表を取得</button>
+		</div>
+	</div>
+</div>
+<div class="toolbar">
+	<input type="file" id="upload_name" name="file" onchange="upload(this.files,'name')" style="display:none"></input>
+	<input type="file" id="upload_machine" name="file" onchange="upload(this.files,'machine')" style="display:none"></input>
+	<input type="file" id="upload_reason" name="file" onchange="upload(this.files,'reason')" style="display:none"></input>
+	<input type="file" id="upload_test" name="file" onchange="upload(this.files,'test')" style="display:none"></input>
+</div>
