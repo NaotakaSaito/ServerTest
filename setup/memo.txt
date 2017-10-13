@@ -1,0 +1,29 @@
+sudo yum update
+sudo yum upgrade
+sudo yum install git httpd
+
+最新のNode.jsを使えるようにする
+nvm (Node Version Manager)を入れて、最新のNode.jsを使えるようにする。（現在：v5.1.0）
+
+1 - nvmをインストールする
+
+$ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.29.0/install.sh | bash
+2 - Node.jsの最新バージョンをインストールする
+
+インストール可能なバージョンを確認
+$ nvm ls-remote
+
+インストールされたバージョンの確認
+$ nvm ls
+
+$ nvm install v5.1
+※ npmのver.も一緒に上がる
+
+3 - インストールしたNode.jsの設定 + デフォルトver.として指定する
+
+$ nvm use 5.1
+
+$ node -v
+でv5.1.0と表示されるはず。
+
+

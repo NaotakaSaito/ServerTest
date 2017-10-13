@@ -15,7 +15,6 @@
 	<script type="text/javascript" src="../jquery-ui/jquery-ui-1.10.4.custom.min.js"></script>
 
 	<script type="text/javascript">
-	var user = 'myHome';
 	var tableParam = {
 		name:{
 			colNames:['id', 'data'],
@@ -48,7 +47,7 @@
 	}
 	function genJqgridParam(table,caption){
 		var newTable = {
-			url: location.origin+':8888'+location.pathname+'?&table='+table+'&cmd=jqgrid',
+			url: location.origin+':8888'+location.pathname+location.search+location.search+'?&table='+table+'&cmd=jqgrid',
 			datatype: "json",
 			width: 'auto',
 			height: 'auto',
@@ -78,7 +77,7 @@
 
 	function addRow(table){
 		jQuery(tableName[table]).jqGrid('editGridRow',"new",{
-			url: location.origin+':8888'+location.pathname+'?&table='+table,
+			url: location.origin+':8888'+location.pathname+location.search+'?&table='+table,
 			height:'auto',
 			modal:true,                                // モーダル表示にします。
 			addCaption:"追加",                         // フォームのキャプションを設定
@@ -92,7 +91,7 @@
 		var rowid = jQuery(tableName[table]).jqGrid('getGridParam','selrow');
 		if (rowid != null) {
 			jQuery(tableName[table]).jqGrid('editGridRow',rowid,{
-				url: location.origin+':8888'+location.pathname+'?&table='+table,
+				url: location.origin+':8888'+location.pathname+location.search+'?&table='+table,
 				multiselect: true,
 				height:'auto',
 				modal:true,                             // モーダル表示にします。
@@ -110,7 +109,7 @@
 		var rowid = jQuery(tableName[table]).getGridParam('selarrrow');
 		if (rowid.length != 0) {
 			jQuery(tableName[table]).jqGrid('delGridRow',rowid,{
-				url: location.origin+':8888'+location.pathname+'?&table='+table,
+				url: location.origin+':8888'+location.pathname+location.search+'?&table='+table,
 				multiselect: true,
 				modal:true,                             // モーダル表示にします。
 				caption:"削除",                         // フォームのキャプションを設定
@@ -126,11 +125,10 @@
 	}
 	function drop(table){
 		$.ajax({
-			url: location.origin+':8888'+location.pathname+'?&table='+table,
+			url: location.origin+':8888'+location.pathname+location.search+'?&table='+table,
 			type: 'POST',
 			dataType: 'json',
 			data: {
-				user: user,
 				table: table,
 				oper: 'drop'
 			},
@@ -144,11 +142,10 @@
 	}
 	function create(table){
 		$.ajax({
-			url: location.origin+':8888'+location.pathname+'?&table='+table,
+			url: location.origin+':8888'+location.pathname+location.search+'?&table='+table,
 			type: 'POST',
 			dataType: 'json',
 			data: {
-				user: user,
 				table: table,
 				oper: 'create'
 			},
@@ -165,11 +162,10 @@
 		var reader = new FileReader();
 		reader.onloadend = function(){
 			$.ajax({
-				url: location.origin+':8888'+location.pathname+'?&table='+table,
+				url: location.origin+':8888'+location.pathname+location.search+'?&table='+table,
 				type: 'POST',
 				dataType: 'json',
 				data: {
-					user: user,
 					table: table,
 					oper: 'upload',
 					data: reader.result
@@ -206,7 +202,7 @@
 
 	function download(table){
 		$.ajax({
-			url: location.origin+':8888'+location.pathname+'?&table='+table+'&cmd=get',
+			url: location.origin+':8888'+location.pathname+location.search+'?&table='+table+'&cmd=get',
 			type: 'GET',
 			dataType: 'json',
 			timeout: 5000,
@@ -229,7 +225,7 @@
 	}
 	function get(table){
 		$.ajax({
-			url: location.origin+':8888'+location.pathname+'?&table='+table+'&cmd=get',
+			url: location.origin+':8888'+location.pathname+location.search+'?&table='+table+'&cmd=get',
 			type: 'GET',
 			dataType: 'json',
 			timeout: 5000,
